@@ -56,26 +56,31 @@ func (l *LinkedList) FindAll(n int) []Node {
 }
 
 func (l *LinkedList) Delete(n int, all bool) {
-	l.head = l.DeleteRec(l.head, n, 0, false, all)
+	l.head = l.DeleteRec(l.head, n, 0, all)
+
+	if l.head == nil {
+		l.tail = nil
+	}
 }
 
-func (l * LinkedList) DeleteRec(temp *Node, n, delCount int, deleted, all bool) * Node {
+func (l *LinkedList) DeleteRec(temp *Node, n, delCount int, all bool) *Node {
 	if temp == nil {
 		return nil
 	}
 
 	if temp.value == n {
-		deleted = true
-		temp.next = l.DeleteRec(temp.next, n, delCount + 1, deleted, all)
-	} else {
-		temp.next = l.DeleteRec(temp.next, n, delCount, deleted, all)
+		delCount++
 	}
+
+	temp.next = l.DeleteRec(temp.next, n, delCount, all)
 
 	if temp.next == nil {
 		l.tail = temp
 	}
 
-	if temp.value == n && (all || deleted && delCount == 0) {
+	// we delete the node either if the user passed delete all or if it is the first occurence
+	// of course under the condition that node value matches the target value
+	if temp.value == n && (all || delCount == 1) {
 		l.count--
 		return temp.next
 	}
@@ -84,11 +89,27 @@ func (l * LinkedList) DeleteRec(temp *Node, n, delCount int, deleted, all bool) 
 }
 
 func (l *LinkedList) Insert(after *Node, add Node) {
-
+	if after == nil {
+        l.InsertFirst(add)
+        return
+    }
+	add.next = after.next
+	after.next = &add
+	l.count++
+	if add.next == nil {
+		l.tail = &add
+	}
 }
 
 func (l *LinkedList) InsertFirst(first Node) {
-
+	if l.head == nil {
+        l.head = &first
+        l.tail = &first
+    } else {
+        first.next = l.head
+        l.head = &first
+    }
+    l.count++
 }
 
 func (l *LinkedList) Clean() {
