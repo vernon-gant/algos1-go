@@ -1,9 +1,9 @@
-package linkedlist
+package main
 
 import (
 	"fmt"
-	// "os"
-	// "reflect"
+	"os"
+	"reflect"
 )
 
 type Node struct {
