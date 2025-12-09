@@ -1,7 +1,7 @@
-package main
+package dynamic_array
 
 import (
-	"os"
+	// "os"
 	"fmt"
 )
 

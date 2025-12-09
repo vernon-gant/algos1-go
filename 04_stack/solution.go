@@ -1,7 +1,7 @@
-package main
+package stack
 
 import (
-	"os"
+	// "os"
 	"errors"
 )
 
