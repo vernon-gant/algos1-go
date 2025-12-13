@@ -2,6 +2,8 @@ package ordered_list
 
 import (
 	"constraints"
+	"errors"
+
 	// "os"
 )
 
@@ -27,17 +29,17 @@ func (l *OrderedList[T]) Add(item T) {
 	if l.head == nil {
 		l.head = newNode
 		l.tail = newNode
-	} else if (l._ascending && item <= l.head.value) || (!l._ascending && item >= l.head.value) {
+	} else if l.shouldBeInserted(l.head, item, true) {
 		newNode.next = l.head
 		l.head.prev = newNode
 		l.head = newNode
-	} else if (l._ascending && item >= l.tail.value) || (!l._ascending && item <= l.tail.value) {
+	} else if l.shouldBeInserted(l.tail, item, false) {
 		newNode.prev = l.tail
 		l.tail.next = newNode
 		l.tail = newNode
 	} else {
 		toInsert := l.head
-		for ; (l._ascending && item >= toInsert.value) || (!l._ascending && item <= toInsert.value); toInsert = toInsert.next {}
+		for ; l.shouldBeInserted(toInsert, item, true); toInsert = toInsert.next {	}
 		newNode.next = toInsert
 		newNode.prev = toInsert.prev
 		toInsert.prev.next = newNode
@@ -46,8 +48,25 @@ func (l *OrderedList[T]) Add(item T) {
 	l.count++
 }
 
+func (l *OrderedList[T]) shouldBeInserted(node *Node[T], item T, before bool) bool {
+	if before {
+		return (l._ascending && item <= node.value) || (!l._ascending && item >= node.value)
+	}
+	return (l._ascending && item >= node.value) || (!l._ascending && item <= node.value)
+}
+
 func (l *OrderedList[T]) Find(n T) (Node[T], error) {
-	return Node[T]{value: n, next: nil, prev: nil}, nil
+	var result Node[T]
+
+	if l.head == nil {
+		return result, errors.New("empty list")
+	}
+
+	if n < l.head.value || n > l.tail.value {
+		return result, errors.New("not found")
+	}
+
+	
 }
 
 func (l *OrderedList[T]) Delete(n T) {
