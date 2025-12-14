@@ -3,7 +3,6 @@ package ordered_list
 import (
 	"constraints"
 	"errors"
-
 	// "os"
 )
 

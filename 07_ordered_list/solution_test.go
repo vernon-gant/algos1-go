@@ -490,3 +490,103 @@ func Test_GivenDescendingList_WhenMultipleOperations_ThenMaintainsOrder(t *testi
 	// Then
 	assert.Equal(t, []int{20, 10, 8, 5}, toSlice(&list))
 }
+
+// TASK 8: REMOVE DUPLICATES
+
+func Test_GivenEmptyList_WhenRemovingDuplicates_ThenRemainsEmpty(t *testing.T) {
+	// Given
+	list := OrderedList[int]{_ascending: true}
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, 0, list.Count())
+	assert.Nil(t, list.head)
+	assert.Nil(t, list.tail)
+}
+
+func Test_GivenSingleElementList_WhenRemovingDuplicates_ThenUnchanged(t *testing.T) {
+	// Given
+	list := makeAscList(5)
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, []int{5}, toSlice(&list))
+	assert.Equal(t, 1, list.Count())
+}
+
+func Test_GivenListWithNoDuplicates_WhenRemovingDuplicates_ThenUnchanged(t *testing.T) {
+	// Given
+	list := makeAscList(1, 2, 3, 4, 5)
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, toSlice(&list))
+	assert.Equal(t, 5, list.Count())
+}
+
+func Test_GivenAscendingListWithDuplicates_WhenRemovingDuplicates_ThenKeepsOnlyUnique(t *testing.T) {
+	// Given
+	list := makeAscList(1, 2, 2, 3, 3, 3, 4, 5, 5)
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, toSlice(&list))
+	assert.Equal(t, 5, list.Count())
+}
+
+func Test_GivenDescendingListWithDuplicates_WhenRemovingDuplicates_ThenKeepsOnlyUnique(t *testing.T) {
+	// Given
+	list := makeDescList(5, 5, 4, 3, 3, 3, 2, 2, 1)
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, []int{5, 4, 3, 2, 1}, toSlice(&list))
+	assert.Equal(t, 5, list.Count())
+}
+
+func Test_GivenListWithAllDuplicates_WhenRemovingDuplicates_ThenKeepsOnlyOne(t *testing.T) {
+	// Given
+	list := makeAscList(7, 7, 7, 7, 7)
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, []int{7}, toSlice(&list))
+	assert.Equal(t, 1, list.Count())
+}
+
+func Test_GivenListWithDuplicatesAtHeadAndTail_WhenRemovingDuplicates_ThenUpdatesHeadAndTail(t *testing.T) {
+	// Given
+	list := makeAscList(1, 1, 1, 2, 3, 5, 5, 5)
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, []int{1, 2, 3, 5}, toSlice(&list))
+	assert.Equal(t, 1, list.head.value)
+	assert.Equal(t, 5, list.tail.value)
+}
+
+func Test_GivenListWithConsecutiveDuplicates_WhenRemovingDuplicates_ThenRemovesAll(t *testing.T) {
+	// Given
+	list := makeAscList(1, 2, 2, 2, 2, 3, 4, 4, 5, 5, 5, 5, 5)
+
+	// When
+	list.RemoveDuplicates()
+
+	// Then
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, toSlice(&list))
+	assert.Equal(t, 5, list.Count())
+}
