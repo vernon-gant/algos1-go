@@ -26,29 +26,38 @@ func (l *OrderedList[T]) Count() int {
 
 func (l *OrderedList[T]) Add(item T) {
 	newNode := &Node[T]{value: item}
+	l.count++
+
 	if l.head == nil {
 		l.head = newNode
 		l.tail = newNode
-	} else if l.shouldBeInserted(l.head, item, true) {
+		return
+	}
+
+	if l.isPivot(l.head, item, true) {
 		newNode.next = l.head
 		l.head.prev = newNode
 		l.head = newNode
-	} else if l.shouldBeInserted(l.tail, item, false) {
+		return
+	}
+
+	if l.isPivot(l.tail, item,false) {
 		newNode.prev = l.tail
 		l.tail.next = newNode
 		l.tail = newNode
-	} else {
-		toInsert := l.head
-		for ; l.shouldBeInserted(toInsert, item, true); toInsert = toInsert.next {	}
-		newNode.next = toInsert
-		newNode.prev = toInsert.prev
-		toInsert.prev.next = newNode
-		toInsert.prev = newNode
+		return
 	}
-	l.count++
+
+	toInsert := l.head
+	for ; !l.isPivot(toInsert, item, true); toInsert = toInsert.next {}
+
+	newNode.next = toInsert
+	newNode.prev = toInsert.prev
+	toInsert.prev.next = newNode
+	toInsert.prev = newNode
 }
 
-func (l *OrderedList[T]) shouldBeInserted(node *Node[T], item T, before bool) bool {
+func (l *OrderedList[T]) isPivot(node *Node[T], item T, before bool) bool {
 	if before {
 		return (l._ascending && item <= node.value) || (!l._ascending && item >= node.value)
 	}
@@ -62,15 +71,56 @@ func (l *OrderedList[T]) Find(n T) (Node[T], error) {
 		return result, errors.New("empty list")
 	}
 
-	if n < l.head.value || n > l.tail.value {
+	if !l.isPivot(l.head, n, false) || !l.isPivot(l.tail, n, true) {
 		return result, errors.New("not found")
 	}
 
-	
+	for temp := l.head; temp != nil; temp = temp.next {
+		if temp.value == n {
+			return *temp, nil
+		}
+		if l.isPivot(temp, n, true) {
+			break
+		}
+	}
+
+	return result, errors.New("not found")
 }
 
 func (l *OrderedList[T]) Delete(n T) {
+	if l.head == nil || !l.isPivot(l.head, n, false) || !l.isPivot(l.tail, n, true) {
+		return
+	}
 
+	l.count--
+
+	if l.head == l.tail {
+		l.Clear(l._ascending)
+		return
+	}
+
+	if l.head.value == n {
+		l.head = l.head.next
+		l.head.prev = nil
+		return
+	}
+
+	if l.tail.value == n {
+		l.tail = l.tail.prev
+		l.tail.next = nil
+		return
+	}
+
+	toDelete := l.head
+	for ; toDelete != nil && toDelete.value != n; toDelete = toDelete.next {}
+
+	if toDelete == nil {
+		l.count++
+		return
+	}
+
+	toDelete.prev.next = toDelete.next
+	toDelete.next.prev = toDelete.prev
 }
 
 func (l *OrderedList[T]) Clear(asc bool) {
