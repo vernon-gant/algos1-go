@@ -1,9 +1,9 @@
-package ordered_list
+package main
 
 import (
 	"constraints"
 	"errors"
-	// "os"
+	"os"
 )
 
 type Node[T constraints.Ordered] struct {
