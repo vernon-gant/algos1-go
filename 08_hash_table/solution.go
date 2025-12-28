@@ -1,9 +1,9 @@
-package main
+package hashtable
 
 import (
-	"strconv"
+	// "strconv"
 	"math"
-	"os"
+	// "os"
 )
 
 type HashTable struct {

@@ -1,8 +1,8 @@
-package main
+package ordered_list
 
 import (
 	"constraints"
-	"os"
+	// "os"
 	"errors"
 )
 
@@ -127,6 +127,31 @@ func (l *OrderedList[T]) Clear(asc bool) {
 	l.tail = nil
 	l.count = 0
 	l._ascending = asc
+}
+
+func (l * OrderedList[T]) FindPosition(value T) (int, bool) {
+	if l.head == nil {
+		return 0, false
+	}
+
+	position := 0
+	current := l.head
+
+	for current != nil {
+		if current.value == value {
+			return position, true
+		}
+
+		// Early exit if we've passed where value would be
+		if l.isPivot(current, value, true) {
+			return position, false
+		}
+
+		current = current.next
+		position++
+	}
+
+	return position, false
 }
 
 func (l *OrderedList[T]) Compare(v1 T, v2 T) int {
