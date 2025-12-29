@@ -1,6 +1,8 @@
-package dictionary
+package main
 
 import (
+	"os"
+	"strconv"
 	"errors"
 )
 
